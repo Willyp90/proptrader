@@ -221,6 +221,27 @@ mixin (
     };
 
     let traderCount = profiles.size();
+    let now = Time.now();
+    let dayNs : Int = 86_400 * 1_000_000_000;
+    let weekCutoff = now - (7 * dayNs);
+    let monthCutoff = now - (30 * dayNs);
+    let yearCutoff = now - (365 * dayNs);
+
+    var weeklyInvestorPnl : Float = 0.0;
+    var monthlyInvestorPnl : Float = 0.0;
+    var ytdInvestorPnl : Float = 0.0;
+
+    for ((_, rec) in payoutRecords.entries()) {
+      if (rec.closeTime >= weekCutoff) {
+        weeklyInvestorPnl += rec.investorShare;
+      };
+      if (rec.closeTime >= monthCutoff) {
+        monthlyInvestorPnl += rec.investorShare;
+      };
+      if (rec.closeTime >= yearCutoff) {
+        ytdInvestorPnl += rec.investorShare;
+      };
+    };
 
     // Compute avg consistency from active challenges
     var totalConsistency : Float = 0.0;
@@ -235,12 +256,16 @@ mixin (
       totalConsistency / activeChallengeCount.toFloat()
     else 0.0;
 
+    let weeklyReturn = if (totalAllocated > 0.0) (weeklyInvestorPnl / totalAllocated) * 100.0 else 0.0;
+    let monthlyReturn = if (totalAllocated > 0.0) (monthlyInvestorPnl / totalAllocated) * 100.0 else 0.0;
+    let ytdReturn = if (totalAllocated > 0.0) (ytdInvestorPnl / totalAllocated) * 100.0 else 0.0;
+
     #ok({
       poolBalance = totalAllocated;
       totalAllocated;
-      weeklyReturn = 0.0; // would require time-windowed P&L aggregation
-      monthlyReturn = 0.0;
-      ytdReturn = 0.0;
+      weeklyReturn;
+      monthlyReturn;
+      ytdReturn;
       traderCount;
       fundedTraderCount = fundedCount;
       avgConsistency;

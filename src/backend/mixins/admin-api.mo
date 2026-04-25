@@ -2,6 +2,7 @@ import Map "mo:core/Map";
 import List "mo:core/List";
 import Time "mo:core/Time";
 import Runtime "mo:core/Runtime";
+import Float "mo:core/Float";
 import Principal "mo:core/Principal";
 import AccessControl "mo:caffeineai-authorization/access-control";
 import CommonTypes "../types/common";
@@ -294,5 +295,63 @@ mixin (
       investorCount = investorShares.size();
       totalShares = totalInvestorShares.value;
     });
+  };
+
+  // ─── Reconciliation Report (admin) ────────────────────────────────────────
+  // Operational safety report used before withdrawals and release gates.
+  public query ({ caller }) func getReconciliationReport() : async CommonTypes.Result<{
+    payoutInvestorTotal : Float;
+    payoutPlatformTotal : Float;
+    trackedInvestorPoolBalance : Float;
+    trackedPlatformFeeBalance : Float;
+    investorDrift : Float;
+    platformDrift : Float;
+    investorShareSupply : Nat;
+    healthy : Bool;
+  }, Text> {
+    if (not isAdminCaller(caller)) {
+      return #err("Unauthorized: admin only");
+    };
+
+    var payoutInvestorTotal : Float = 0.0;
+    var payoutPlatformTotal : Float = 0.0;
+    for ((_, rec) in payoutRecords.entries()) {
+      payoutInvestorTotal += rec.investorShare;
+      payoutPlatformTotal += rec.platformShare;
+    };
+
+    let investorDrift = investorPoolBalance.value - payoutInvestorTotal;
+    let platformDrift = platformFeeBalance.value - payoutPlatformTotal;
+    let tolerance = 0.000001;
+    let healthy = Float.abs(investorDrift) <= tolerance and Float.abs(platformDrift) <= tolerance;
+
+    #ok({
+      payoutInvestorTotal;
+      payoutPlatformTotal;
+      trackedInvestorPoolBalance = investorPoolBalance.value;
+      trackedPlatformFeeBalance = platformFeeBalance.value;
+      investorDrift;
+      platformDrift;
+      investorShareSupply = totalInvestorShares.value;
+      healthy;
+    });
+  };
+
+  // ─── Endpoint/Role Matrix (public) ────────────────────────────────────────
+  // Human-readable matrix to keep UI/backend authorization contracts aligned.
+  public query func getEndpointRoleMatrix() : async [(Text, [Text])] {
+    [
+      ("registerTrader", ["trader"]),
+      ("enterChallenge", ["trader"]),
+      ("openPosition", ["trader"]),
+      ("closePosition", ["trader"]),
+      ("getMyTrades", ["trader"]),
+      ("getInvestorStats", ["admin (investor role pending model expansion)"]),
+      ("getPayoutStats", ["admin"]),
+      ("withdrawPlatformFees", ["admin"]),
+      ("getReconciliationReport", ["admin"]),
+      ("setAdminParams", ["admin"]),
+      ("overrideParams", ["admin"]),
+    ];
   };
 };

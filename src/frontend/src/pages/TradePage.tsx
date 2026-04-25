@@ -696,22 +696,24 @@ export default function TradePage() {
     setRejectionMessage(null);
     setSizeFieldError(null);
     try {
-      const result = await actor.executeTrade(
-        challenge.id,
+      const result = await actor.openPosition(
         selectedPair.value,
         side,
         qty,
+        BigInt(50),
+        slVal,
+        tpVal,
       );
       if (result.__kind__ === "ok") {
-        const trade = result.ok;
+        const latestTrades = await actor.getMyTrades(BigInt(1));
+        const trade = latestTrades[0] ?? null;
         setResultTrade(trade);
         setResultOpen(true);
         setValidation("idle");
-        const pnlSign = trade.pnl >= 0 ? "+" : "";
         const desc = isFunded
-          ? `${pnlSign}$${Math.abs(trade.pnl).toFixed(2)} profit → You received $${(trade.pnl * 0.7).toFixed(2)} (70%)`
-          : `${pnlSign}$${Math.abs(trade.pnl).toFixed(2)} simulated P&L`;
-        toast.success("Trade closed", { description: desc });
+          ? "Position opened with live on-chain execution path."
+          : "Position opened in challenge mode with simulated execution.";
+        toast.success("Position opened", { description: desc });
         queryClient.invalidateQueries({ queryKey: ["challenge", principal] });
         queryClient.invalidateQueries({ queryKey: ["myTrades", principal] });
         queryClient.invalidateQueries({
@@ -1072,6 +1074,20 @@ export default function TradePage() {
 
               {/* Pre-flight validation */}
               <ValidationIndicator state={validation} />
+
+              {isFunded && (
+                <div
+                  className="flex items-start gap-2 p-2.5 rounded-md bg-accent/10 border border-accent/30"
+                  data-ocid="trade.funded_approval_notice"
+                >
+                  <AlertCircle className="h-3.5 w-3.5 text-accent shrink-0 mt-0.5" />
+                  <p className="text-xs text-muted-foreground">
+                    Funded swaps require prior token allowance approval on the
+                    selected DEX path. If execution fails at deposit, approve
+                    first and retry.
+                  </p>
+                </div>
+              )}
 
               <Button
                 type="submit"

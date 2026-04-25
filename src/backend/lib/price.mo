@@ -10,6 +10,16 @@ import CommonTypes "../types/common";
 import Types "../types/trading";
 
 module {
+  let supportedPairs : [Text] = ["ICP/USDT", "BTC/USDT", "ETH/USDT"];
+
+  public func getSupportedPairs() : [Text] { supportedPairs };
+
+  public func isSupportedPair(pair : Text) : Bool {
+    for (p in supportedPairs.values()) {
+      if (p == pair) return true;
+    };
+    false
+  };
 
   // ─── ICPSwap ─────────────────────────────────────────────────────────────
 
@@ -20,6 +30,9 @@ module {
     transform : OutCall.Transform,
     now : Int,
   ) : async Types.PriceData {
+    if (not isSupportedPair(pair)) {
+      return { pair; price = 0.0; timestamp = now; source = "unsupported-pair" };
+    };
     let url = "https://uvevg-iyaaa-aaaak-ac27q-cai.raw.icp0.io/pool?canisterId=" # pair;
     let raw = await OutCall.httpGetRequest(url, [], transform);
     switch (parseIcpSwapResponse(raw, pair, now)) {
@@ -34,6 +47,9 @@ module {
     transform : OutCall.Transform,
     now : Int,
   ) : async Types.PriceData {
+    if (not isSupportedPair(pair)) {
+      return { pair; price = 0.0; timestamp = now; source = "unsupported-pair" };
+    };
     let url = "https://data.sonic.ooo/api/v1/tokens/" # pair;
     let raw = await OutCall.httpGetRequest(url, [], transform);
     switch (parseSonicResponse(raw, pair, now)) {
@@ -262,11 +278,10 @@ module {
     adminParams : Types.AdminParams,
     transform : OutCall.Transform,
   ) : async* () {
-    let knownPairs = ["ICP/USDT", "BTC/USDT", "ETH/USDT"];
     let dexes : [CommonTypes.DexSource] = [#icpSwap, #sonic];
 
     for (dex in dexes.values()) {
-      for (pair in knownPairs.values()) {
+      for (pair in supportedPairs.values()) {
         await* updatePriceCache(dex, pair, priceCache, adminParams, transform);
       };
     };

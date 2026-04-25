@@ -164,6 +164,9 @@ mixin (
 
   // Fetch a live price from ICPSwap first; fall back to Sonic on zero price.
   public func getLivePrice(pair : Text) : async CommonTypes.Result<Types.PriceData, Text> {
+    if (not PriceLib.isSupportedPair(pair)) {
+      return #err("Unsupported pair: " # pair);
+    };
     let now = Time.now();
     let data = await PriceLib.fetchIcpSwapPrice(pair, transform, now);
     if (data.price > 0.0) {
@@ -186,6 +189,13 @@ mixin (
     side : CommonTypes.TradeSide,
     quantity : Float,
   ) : async CommonTypes.Result<Types.Trade, Text> {
+    // Deprecated path kept for compatibility with older clients.
+    // Production clients must use openPosition/closePosition so lifecycle,
+    // payout, SL/TP, and reconciliation logic stay on one canonical path.
+    return #err(
+      "DEPRECATED_ENDPOINT: executeTrade is disabled. Use openPosition/closePosition."
+    );
+
     if (caller.isAnonymous()) {
       return #err("Unauthorized");
     };

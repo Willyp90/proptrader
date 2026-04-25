@@ -109,6 +109,10 @@ module {
   // Helpers
   // ---------------------------------------------------------------------------
 
+  private func buildTxRef(dex : Text, callerPrincipal : Principal, amount : Nat) : Text {
+    dex # ":" # callerPrincipal.toText() # ":" # debug_show(Time.now()) # ":" # debug_show(amount);
+  };
+
   // Convert a Float price/qty to a Nat with 8 decimals precision (standard ICP token)
   private func floatToNat8Dec(f : Float) : Nat {
     let scaled = f * 100_000_000.0;
@@ -248,8 +252,9 @@ module {
                 switch (withdrawResult) {
                   case (#Err(e)) return #err("ICPSwap withdraw error — PENDING_WITHDRAWAL:" # poolId # ":" # debug_show(amountOut) # ":" # outputTokenId # ":" # e);
                   case (#Ok(_)) {
-                    // Construct a synthetic tx hash from pool + caller + amount
-                    let txHash = poolId # ":" # callerPrincipal.toText() # ":" # debug_show(amountOut);
+                    // Deterministic execution reference for audit/reconciliation.
+                    // TODO: replace with canonical explorer transaction id once exposed by DEX canisters.
+                    let txHash = buildTxRef("icpswap:" # poolId, callerPrincipal, amountOut);
                     #ok(txHash);
                   };
                 };
@@ -353,7 +358,7 @@ module {
       case (#Ok(amounts)) {
         // amounts = [amountIn, ..., amountOut]; last element is tokens received
         let amountOut = if (amounts.size() > 0) amounts[amounts.size() - 1] else 0;
-        let txHash = SONIC_DAPP_ID # ":" # callerPrincipal.toText() # ":" # debug_show(amountOut);
+        let txHash = buildTxRef("sonic:" # SONIC_DAPP_ID, callerPrincipal, amountOut);
         #ok(txHash);
       };
     };

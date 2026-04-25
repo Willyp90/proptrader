@@ -95,6 +95,7 @@ mixin (
     if (caller.isAnonymous()) return #err("Unauthorized");
     if (adminParams.value.tradingPaused) return #err("Trading is currently paused");
     if (size <= 0.0) return #err("Size must be > 0");
+    if (not PriceLib.isSupportedPair(pair)) return #err("Unsupported pair: " # pair);
 
     let profile = switch (profiles.get(caller)) {
       case (?p) p;

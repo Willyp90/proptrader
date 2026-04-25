@@ -1,0 +1,549 @@
+type http_request_result = 
+ record {
+   body: blob;
+   headers: vec http_header;
+   status: nat;
+ };
+type http_header = 
+ record {
+   name: text;
+   value: text;
+ };
+type ValidationStatus = 
+ variant {
+   approved;
+   conditional;
+   rejected;
+ };
+type ValidationResult = 
+ record {
+   estimatedImpact: float64;
+   reasons: vec text;
+   status: ValidationStatus;
+ };
+type UserRole__1 = 
+ variant {
+   admin;
+   guest;
+   user;
+ };
+type UserRole = 
+ variant {
+   admin;
+   trader;
+ };
+type TransformationOutput = 
+ record {
+   body: blob;
+   headers: vec http_header;
+   status: nat;
+ };
+type TransformationInput = 
+ record {
+   context: blob;
+   response: http_request_result;
+ };
+type TraderProfile = 
+ record {
+   activeChallengeId: opt nat;
+   fundedAccount: opt FundedAccount;
+   mode: TraderMode;
+   "principal": principal;
+   role: UserRole;
+   tenureMonths: nat;
+   totalPayouts: float64;
+   username: text;
+ };
+type TraderMode = 
+ variant {
+   evaluation;
+   funded;
+ };
+type TradeSide = 
+ variant {
+   buy;
+   sell;
+ };
+type Trade = 
+ record {
+   executionType: ExecutionType;
+   fillPrice: float64;
+   id: nat;
+   pair: text;
+   pnl: float64;
+   quantity: float64;
+   riskCheckPassed: bool;
+   side: TradeSide;
+   timestamp: int;
+   traderPrincipal: principal;
+   txHash: opt text;
+ };
+type TargetOutcome = 
+ record {
+   actualConsistency: float64;
+   actualPassRate: float64;
+   actualReturn: float64;
+   cohortId: nat;
+   consistencyTarget: float64;
+   lastUpdated: int;
+   passRateTarget: float64;
+   returnTarget: float64;
+ };
+type RiskLevel = 
+ variant {
+   high;
+   low;
+   medium;
+ };
+type Result_9 = 
+ variant {
+   err: text;
+   ok: Position;
+ };
+type Result_8 = 
+ variant {
+   err: text;
+   ok: TraderProfile;
+ };
+type Result_7 = 
+ variant {
+   err: text;
+   ok: AdminParams;
+ };
+type Result_6 = 
+ variant {
+   err: text;
+   ok;
+ };
+type Result_5 = 
+ variant {
+   err: text;
+   ok: TargetOutcome;
+ };
+type Result_4 = 
+ variant {
+   err: text;
+   ok:
+    vec
+     record {
+       current: float64;
+       metric: text;
+       reason: text;
+       suggested: float64;
+     };
+ };
+type Result_3 = 
+ variant {
+   err: text;
+   ok: record {
+         changes: vec AllocationChange;
+         reviewedCount: nat;
+       };
+ };
+type Result_21 = 
+ variant {
+   err: text;
+   ok: record {
+         poolBalance: float64;
+         shares: nat;
+       };
+ };
+type Result_20 = 
+ variant {
+   err: text;
+   ok: Trade;
+ };
+type Result_2 = 
+ variant {
+   err: text;
+   ok: CohortParams;
+ };
+type Result_19 = 
+ variant {
+   err: text;
+   ok:
+    record {
+      investorCount: nat;
+      platformFeeBalance: float64;
+      poolBalance: float64;
+      totalShares: nat;
+    };
+ };
+type Result_18 = 
+ variant {
+   err: text;
+   ok: InvestorStats;
+ };
+type Result_17 = 
+ variant {
+   err: text;
+   ok: PriceData;
+ };
+type Result_16 = 
+ variant {
+   err: text;
+   ok: Challenge;
+ };
+type Result_15 = 
+ variant {
+   err: text;
+   ok: ConsistencyScore;
+ };
+type Result_14 = 
+ variant {
+   err: text;
+   ok: FundedAccount;
+ };
+type Result_13 = 
+ variant {
+   err: text;
+   ok:
+    record {
+      poolBalance: float64;
+      poolValue: float64;
+      sharePrice: float64;
+      shares: nat;
+      totalShares: nat;
+    };
+ };
+type Result_12 = 
+ variant {
+   err: text;
+   ok:
+    record {
+      consistencyProgress: float64;
+      phase: ChallengePhase;
+      profitProgress: float64;
+      timeRemainingDays: int;
+    };
+ };
+type Result_11 = 
+ variant {
+   err: text;
+   ok:
+    record {
+      investorPoolBalance: float64;
+      platformFeeBalance: float64;
+      totalInvestorPayouts: float64;
+      totalPlatformRevenue: float64;
+      totalTraderPayouts: float64;
+    };
+ };
+type Result_10 = 
+ variant {
+   err: text;
+   ok:
+    record {
+      base: float64;
+      current: float64;
+      history: vec AllocationChange;
+      multiplier: float64;
+    };
+ };
+type Result_1 = 
+ variant {
+   err: text;
+   ok: record {
+         remainingShares: nat;
+         withdrawn: float64;
+       };
+ };
+type Result = 
+ variant {
+   err: text;
+   ok: float64;
+ };
+type PriceData = 
+ record {
+   pair: text;
+   price: float64;
+   source: text;
+   timestamp: int;
+ };
+type PriceCache = 
+ record {
+   ask: float64;
+   bid: float64;
+   dex: DexSource;
+   last: float64;
+   pair: text;
+   stale: bool;
+   timestamp: int;
+   volume: float64;
+ };
+type Position = 
+ record {
+   currentPrice: float64;
+   dex: DexSource;
+   direction: TradeSide;
+   entryPrice: float64;
+   entryTime: int;
+   exitTime: opt int;
+   pair: text;
+   realizedPnl: float64;
+   simulatedFill: bool;
+   size: float64;
+   status: OrderStatus;
+   stopLoss: opt float64;
+   takeProfit: opt float64;
+   tradeId: nat;
+   traderId: principal;
+   unrealizedPnl: float64;
+ };
+type PhaseParams = 
+ record {
+   maxDailyDrawdown: float64;
+   maxTotalDrawdown: float64;
+   minConsistencyScore: float64;
+   minTradingDays: nat;
+   profitTarget: float64;
+   timeLimitDays: nat;
+ };
+type PayoutRecord = 
+ record {
+   closeTime: int;
+   consistencyBonus: float64;
+   investorShare: float64;
+   platformShare: float64;
+   profitAmount: float64;
+   status: text;
+   tenureBonus: float64;
+   tradeId: nat;
+   traderId: principal;
+   traderPct: float64;
+   traderShare: float64;
+ };
+type OrderStatus = 
+ variant {
+   cancelled;
+   closed;
+   filled;
+   liquidated;
+   open;
+   pendingFill;
+ };
+type LeaderboardEntry = 
+ record {
+   consistencyScore: float64;
+   funded: bool;
+   lastTradeTime: int;
+   phase: ChallengePhase;
+   profitPct: float64;
+   rank: nat;
+   riskScore: float64;
+   tradeCount: nat;
+   traderId: principal;
+   username: text;
+ };
+type InvestorStats = 
+ record {
+   avgConsistency: float64;
+   fundedTraderCount: nat;
+   monthlyReturn: float64;
+   poolBalance: float64;
+   totalAllocated: float64;
+   traderCount: nat;
+   weeklyReturn: float64;
+   ytdReturn: float64;
+ };
+type FundedAccount = 
+ record {
+   accountBalance: float64;
+   allocationBase: float64;
+   allocationCurrent: float64;
+   lastReviewDate: int;
+   monthsActive: nat;
+   nextReviewDate: int;
+   performanceMultiplier: float64;
+   traderId: principal;
+   unrealizedPnl: float64;
+ };
+type ExecutionType = 
+ variant {
+   real;
+   simulated;
+ };
+type DexSource = 
+ variant {
+   icpSwap;
+   sonic;
+ };
+type ConsistencyScore = 
+ record {
+   activityScore: float64;
+   drawdownCtrlScore: float64;
+   phase: ChallengePhase;
+   profitDistScore: float64;
+   score: float64;
+   timestamp: int;
+   traderId: principal;
+   winRateScore: float64;
+ };
+type CohortParams = 
+ record {
+   active: bool;
+   createdDate: int;
+   id: nat;
+   lastModified: int;
+   modifiedBy: opt principal;
+   name: text;
+   phase1: PhaseParams;
+   phase2: PhaseParams;
+ };
+type ChallengeStatus = 
+ variant {
+   active;
+   failed;
+   passed;
+   paused;
+ };
+type ChallengePhase = 
+ variant {
+   funded;
+   notStarted;
+   phase1;
+   phase2;
+ };
+type Challenge = 
+ record {
+   cohortId: opt nat;
+   consistencyScore: float64;
+   currentBalance: float64;
+   dailyDrawdownLimitPct: float64;
+   fundedAllocation: opt float64;
+   id: nat;
+   perTradeLimitPct: float64;
+   phase: ChallengePhase;
+   phase1EndTime: opt int;
+   phase1StartTime: opt int;
+   phase2EndTime: opt int;
+   phase2StartTime: opt int;
+   riskLevel: RiskLevel;
+   startTime: int;
+   startingBalance: float64;
+   status: ChallengeStatus;
+   targetProfitPct: float64;
+   totalDrawdownLimitPct: float64;
+   traderPrincipal: principal;
+   trades: vec nat;
+ };
+type AuditEntry = 
+ record {
+   action: text;
+   details: text;
+   "principal": principal;
+   timestamp: int;
+ };
+type AllocationChange = 
+ record {
+   newAllocation: float64;
+   oldAllocation: float64;
+   reason: text;
+   reviewedBy: opt principal;
+   timestamp: int;
+   traderId: principal;
+ };
+type AdminParams = 
+ record {
+   baseAllocationAmount: float64;
+   baseFee: float64;
+   challengeCheckIntervalSecs: nat;
+   dailyDrawdownLimitPct: float64;
+   defaultPhase1: PhaseParams;
+   defaultPhase2: PhaseParams;
+   investorPoolSharePct: float64;
+   maxAllocationCap: float64;
+   maxTraderSharePct: float64;
+   perTradeLimitPct: float64;
+   performanceFee: float64;
+   platformFeePct: float64;
+   pricePollingIntervalSecs: nat;
+   riskLevel: RiskLevel;
+   slCheckIntervalSecs: nat;
+   targetProfitPct: float64;
+   totalDrawdownLimitPct: float64;
+   traderBaseSharePct: float64;
+   tradingPaused: bool;
+   updatedAt: int;
+ };
+service : {
+  _initializeAccessControl: () -> ();
+  assignCallerUserRole: (user: principal, role: UserRole__1) -> ();
+  cancelOrder: (tradeId: nat) -> (Result_6);
+  closePosition: (tradeId: nat, partialSize: opt float64) -> (Result_9);
+  createCohort: (name: text, phase1: PhaseParams, phase2: PhaseParams) ->
+   (Result_2);
+  depositToPool: (amount: float64) -> (Result_21);
+  enterChallenge: (startingBalance: float64, targetProfitPct: float64,
+   riskLevel: RiskLevel) -> (Result_16);
+  executeTrade: (challengeId: nat, pair: text, side: TradeSide, quantity:
+   float64) -> (Result_20);
+  forceChallenge: (challengeId: nat, status: ChallengeStatus, reason:
+   text) -> (Result_16);
+  getAdminParams: () -> (AdminParams) query;
+  getAllChallenges: () -> (vec Challenge) query;
+  getAllCohorts: () -> (vec CohortParams) query;
+  getAuditLog: (limit: nat) -> (vec AuditEntry) query;
+  getCallerUserRole: () -> (UserRole__1) query;
+  getConsistencyScoreHistory: (limit: nat) -> (vec ConsistencyScore) query;
+  getFundedTraderList: () ->
+   (vec
+     record {
+       allocation: float64;
+       consistencyScore: float64;
+       monthlyReturn: float64;
+       status: text;
+       traderId: principal;
+       username: text;
+     }) query;
+  getInvestorPoolSummary: () -> (Result_19) query;
+  getInvestorStats: () -> (Result_18) query;
+  getLeaderboard: (sortBy: text, timePeriodDays: nat, limit: nat) ->
+   (vec LeaderboardEntry) query;
+  getLivePrice: (pair: text) -> (Result_17);
+  getMyChallenge: () -> (Result_16) query;
+  getMyClosedPositions: (limit: nat) -> (vec Position) query;
+  getMyConsistencyScore: () -> (Result_15) query;
+  getMyConsistencyScoreSummary: () -> (Result_15) query;
+  getMyFundedAccount: () -> (Result_14) query;
+  getMyInvestorBalance: () -> (Result_13) query;
+  getMyOpenPositions: () -> (vec Position) query;
+  getMyPhaseStatus: () -> (Result_12) query;
+  getMyProfile: () -> (Result_8) query;
+  getMyTrades: (limit: nat) -> (vec Trade) query;
+  getPayoutHistory: (startTime: opt int, endTime: opt int, limit: nat) ->
+   (vec PayoutRecord) query;
+  getPayoutStats: () -> (Result_11) query;
+  getPriceSnapshot: (pair: text, dex: DexSource) -> (opt PriceCache) query;
+  getTargetOutcomes: (cohortId: nat) -> (Result_5) query;
+  getTraderAllocation: (traderId: principal) -> (Result_10) query;
+  getTraderPublicProfile: (traderId: principal) ->
+   (opt
+     record {
+       consistencyHistory: vec ConsistencyScore;
+       leaderboardEntry: LeaderboardEntry;
+       recentTrades: vec Trade;
+     }) query;
+  isCallerAdmin: () -> (bool) query;
+  openPosition: (pair: text, direction: TradeSide, size: float64,
+   slippageBps: nat, stopLoss: opt float64, takeProfit: opt float64) ->
+   (Result_9);
+  overrideParams: (params: AdminParams) -> (Result_7);
+  registerTrader: () -> (Result_8);
+  retryPendingWithdrawals: () -> ();
+  setAdminParams: (targetProfitPct: float64, riskLevel: RiskLevel) ->
+   (Result_7);
+  setAdminPrincipal: (newAdmin: principal) -> (Result_6);
+  setPauseTrading: (paused: bool) -> (Result_6);
+  setTargetOutcomes: (cohortId: nat, passRateTarget: float64, returnTarget:
+   float64, consistencyTarget: float64) -> (Result_5);
+  suggestParamAdjustments: (cohortId: nat) -> (Result_4) query;
+  transform: (input: TransformationInput) -> (TransformationOutput) query;
+  triggerMonthlyReview: () -> (Result_3);
+  updateCohortParams: (cohortId: nat, phase1: opt PhaseParams, phase2:
+   opt PhaseParams) -> (Result_2);
+  validateTradeRequest: (pair: text, direction: TradeSide, size: float64,
+   slippageBps: nat) -> (ValidationResult) query;
+  withdrawFromPool: (amount: float64) -> (Result_1);
+  withdrawPlatformFees: (amount: float64) -> (Result);
+}

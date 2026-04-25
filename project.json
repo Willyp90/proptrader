@@ -1,0 +1,31 @@
+{
+  "overview": "PropTrader is a decentralized prop trading platform on the Internet Computer. Traders take a two-phase challenge to prove consistency and profitability, then receive funded accounts backed by pooled investor capital. The platform enforces strict on-chain risk controls, calculates consistency scores, and distributes profits transparently between traders, investors, and the platform. Integrated with ICPSwap and Sonic DEXs for live pricing and real swap execution.",
+  "features": [
+    "Two-phase dynamic challenge system with on-chain pass/fail enforcement",
+    "Consistency scoring engine (profit distribution, win rate, drawdown control, trading activity)",
+    "ICPSwap and Sonic DEX integration with live price feeds and order execution",
+    "Simulated fills for challenge traders, real swaps for funded traders",
+    "On-chain risk engine: per-trade, daily drawdown, total drawdown, position size limits",
+    "Stop-loss and take-profit auto-execution via backend timer",
+    "Funded account allocation with performance multiplier scaling",
+    "Profit distribution: trader 70-80%, investor pool 15-25%, platform 5%",
+    "Dynamic admin parameter engine with cohort management and target outcome tracking",
+    "Trader dashboard with consistency score, payout history, funded balance",
+    "Investor dashboard with pool balance, trader allocation breakdown, period P&L",
+    "Public leaderboard ranked by profit %, risk score, consistency score"
+  ],
+  "category": "finance",
+  "tags": [
+    "defi",
+    "prop-trading",
+    "icp",
+    "challenge",
+    "risk-management",
+    "icpswap",
+    "sonic",
+    "leaderboard",
+    "consistency-scoring",
+    "funded-trading"
+  ],
+  "last_updated": "2026-04-25T04:43:13.660Z"
+}

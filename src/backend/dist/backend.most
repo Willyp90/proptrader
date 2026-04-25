@@ -1,0 +1,318 @@
+// Version: 1.0.0
+type AdminParams__467043426 =
+  {
+    baseAllocationAmount : Float;
+    baseFee : Float;
+    challengeCheckIntervalSecs : Nat;
+    dailyDrawdownLimitPct : Float;
+    defaultPhase1 : PhaseParams__80759683;
+    defaultPhase2 : PhaseParams__80759683;
+    investorPoolSharePct : Float;
+    maxAllocationCap : Float;
+    maxTraderSharePct : Float;
+    perTradeLimitPct : Float;
+    performanceFee : Float;
+    platformFeePct : Float;
+    pricePollingIntervalSecs : Nat;
+    riskLevel : RiskLevel__200299697;
+    slCheckIntervalSecs : Nat;
+    targetProfitPct : Float;
+    totalDrawdownLimitPct : Float;
+    traderBaseSharePct : Float;
+    tradingPaused : Bool;
+    updatedAt : Int
+  };
+type AllocationChange__608172091 =
+  {
+    newAllocation : Float;
+    oldAllocation : Float;
+    reason : Text;
+    reviewedBy : ?Principal;
+    timestamp : Int;
+    traderId : Principal
+  };
+type AuditEntry__307425904 =
+  {action : Text; details : Text; principal : Principal; timestamp : Int};
+type ChallengePhase__529936904 = {#funded; #notStarted; #phase1; #phase2};
+type ChallengeStatus__73411469 = {#active; #failed; #passed; #paused};
+type Challenge__450396613 =
+  {
+    cohortId : ?Nat;
+    consistencyScore : Float;
+    currentBalance : Float;
+    dailyDrawdownLimitPct : Float;
+    fundedAllocation : ?Float;
+    id : Nat;
+    perTradeLimitPct : Float;
+    phase : ChallengePhase__529936904;
+    phase1EndTime : ?Int;
+    phase1StartTime : ?Int;
+    phase2EndTime : ?Int;
+    phase2StartTime : ?Int;
+    riskLevel : RiskLevel__200299697;
+    startTime : Int;
+    startingBalance : Float;
+    status : ChallengeStatus__73411469;
+    targetProfitPct : Float;
+    totalDrawdownLimitPct : Float;
+    traderPrincipal : Principal;
+    trades : [Nat]
+  };
+type CohortParams__294567351 =
+  {
+    active : Bool;
+    createdDate : Int;
+    id : Nat;
+    lastModified : Int;
+    modifiedBy : ?Principal;
+    name : Text;
+    phase1 : PhaseParams__80759683;
+    phase2 : PhaseParams__80759683
+  };
+type ConsistencyScore__981839019 =
+  {
+    activityScore : Float;
+    drawdownCtrlScore : Float;
+    phase : ChallengePhase__529936904;
+    profitDistScore : Float;
+    score : Float;
+    timestamp : Int;
+    traderId : Principal;
+    winRateScore : Float
+  };
+type Data__791452850<K, V> =
+  {var count : Nat__490723111; kvs : [var ?(K, V)]};
+type DexSource__961294420 = {#icpSwap; #sonic};
+type ExecutionType__383459983 = {#real; #simulated};
+type FundedAccount__1825790 =
+  {
+    accountBalance : Float;
+    allocationBase : Float;
+    allocationCurrent : Float;
+    lastReviewDate : Int;
+    monthsActive : Nat;
+    nextReviewDate : Int;
+    performanceMultiplier : Float;
+    traderId : Principal;
+    unrealizedPnl : Float
+  };
+type Internal__8484328<K, V> =
+  {children : [var ?Node__46230540<K, V>]; data : Data__791452850<K, V>};
+type Leaf__809889148<K, V> = {data : Data__791452850<K, V>};
+type List__415060402<T> = List__790383201<T>;
+type List__790383201<T> =
+  {
+    var blockIndex : Nat__490723111;
+    var blocks : [var [var ?T]];
+    var elementIndex : Nat__490723111
+  };
+type Map__158565046<K, V> = Map__297112838<K, V>;
+type Map__297112838<K, V> =
+  {var root : Node__46230540<K, V>; var size : Nat__490723111};
+type Map__605269027<K, V> = Map__158565046<K, V>;
+type Nat__490723111 = Nat__920180692;
+type Nat__920180692 = Nat;
+type Node__46230540<K, V> =
+  {#internal : Internal__8484328<K, V>; #leaf : Leaf__809889148<K, V>};
+type OrderStatus__393009242 =
+  {#cancelled; #closed; #filled; #liquidated; #open; #pendingFill};
+type PayoutRecord__382707200 =
+  {
+    closeTime : Int;
+    consistencyBonus : Float;
+    investorShare : Float;
+    platformShare : Float;
+    profitAmount : Float;
+    status : Text;
+    tenureBonus : Float;
+    tradeId : Nat;
+    traderId : Principal;
+    traderPct : Float;
+    traderShare : Float
+  };
+type PendingWithdrawal__516700992 =
+  {
+    amount : Nat;
+    attempts : Nat;
+    lastAttempt : Int;
+    poolCanisterId : Text;
+    status : {#completed; #failed; #pending};
+    tokenCanisterId : Text;
+    tradeId : Text;
+    traderId : Principal
+  };
+type PhaseParams__80759683 =
+  {
+    maxDailyDrawdown : Float;
+    maxTotalDrawdown : Float;
+    minConsistencyScore : Float;
+    minTradingDays : Nat;
+    profitTarget : Float;
+    timeLimitDays : Nat
+  };
+type Position__942404438 =
+  {
+    currentPrice : Float;
+    dex : DexSource__961294420;
+    direction : TradeSide__620652677;
+    entryPrice : Float;
+    entryTime : Int;
+    exitTime : ?Int;
+    pair : Text;
+    realizedPnl : Float;
+    simulatedFill : Bool;
+    size : Float;
+    status : OrderStatus__393009242;
+    stopLoss : ?Float;
+    takeProfit : ?Float;
+    tradeId : Nat;
+    traderId : Principal;
+    unrealizedPnl : Float
+  };
+type PriceCache__626356930 =
+  {
+    ask : Float;
+    bid : Float;
+    dex : DexSource__961294420;
+    last : Float;
+    pair : Text;
+    stale : Bool;
+    timestamp : Int;
+    volume : Float
+  };
+type RiskLevel__200299697 = {#high; #low; #medium};
+type TargetOutcome__890183620 =
+  {
+    actualConsistency : Float;
+    actualPassRate : Float;
+    actualReturn : Float;
+    cohortId : Nat;
+    consistencyTarget : Float;
+    lastUpdated : Int;
+    passRateTarget : Float;
+    returnTarget : Float
+  };
+type TimerId__422952500 = Nat;
+type TradeSide__620652677 = {#buy; #sell};
+type Trade__118004559 =
+  {
+    executionType : ExecutionType__383459983;
+    fillPrice : Float;
+    id : Nat;
+    pair : Text;
+    pnl : Float;
+    quantity : Float;
+    riskCheckPassed : Bool;
+    side : TradeSide__620652677;
+    timestamp : Int;
+    traderPrincipal : Principal;
+    txHash : ?Text
+  };
+type TraderMode__591342688 = {#evaluation; #funded};
+type TraderProfile__78826272 =
+  {
+    activeChallengeId : ?Nat;
+    fundedAccount : ?FundedAccount__1825790;
+    mode : TraderMode__591342688;
+    principal : Principal;
+    role : UserRole__451090586;
+    tenureMonths : Nat;
+    totalPayouts : Float;
+    username : Text
+  };
+type UserRole__1073662873 = {#admin; #guest; #user};
+type UserRole__451090586 = {#admin; #trader};
+actor {
+  stable accessControlState :
+    {
+      var adminAssigned : Bool;
+      userRoles : Map__605269027<Principal, UserRole__1073662873>
+    };
+  stable adminParams : {var value : AdminParams__467043426};
+  stable adminPrincipal : {var value : Principal};
+  stable allocationChanges :
+    {
+      var root :
+        Node__46230540<Principal,
+                        List__415060402<AllocationChange__608172091>>;
+      var size : Nat__490723111
+    };
+  stable auditLog :
+    {
+      var blockIndex : Nat__490723111;
+      var blocks : [var [var ?AuditEntry__307425904]];
+      var elementIndex : Nat__490723111
+    };
+  stable challenges :
+    {
+      var root : Node__46230540<Nat, Challenge__450396613>;
+      var size : Nat__490723111
+    };
+  stable cohorts :
+    {
+      var root : Node__46230540<Nat, CohortParams__294567351>;
+      var size : Nat__490723111
+    };
+  stable consistencyScoreHistory :
+    {
+      var root :
+        Node__46230540<Principal,
+                        List__415060402<ConsistencyScore__981839019>>;
+      var size : Nat__490723111
+    };
+  stable dailyPnlTracker :
+    {
+      var root : Node__46230540<Principal, {dailyPnl : Float; dayStart : Int}>;
+      var size : Nat__490723111
+    };
+  stable investorPoolBalance : {var value : Float};
+  stable investorShares :
+    {var root : Node__46230540<Principal, Nat>; var size : Nat__490723111};
+  stable nextChallengeId : {var value : Nat};
+  stable nextCohortId : {var value : Nat};
+  stable nextTradeId : {var value : Nat};
+  stable payoutRecords :
+    {
+      var root : Node__46230540<Nat, PayoutRecord__382707200>;
+      var size : Nat__490723111
+    };
+  stable pendingWithdrawals :
+    {
+      var root : Node__46230540<Text, PendingWithdrawal__516700992>;
+      var size : Nat__490723111
+    };
+  stable platformFeeBalance : {var value : Float};
+  stable positions :
+    {
+      var root : Node__46230540<Nat, Position__942404438>;
+      var size : Nat__490723111
+    };
+  stable priceCaches :
+    {
+      var root : Node__46230540<Text, PriceCache__626356930>;
+      var size : Nat__490723111
+    };
+  stable profiles :
+    {
+      var root : Node__46230540<Principal, TraderProfile__78826272>;
+      var size : Nat__490723111
+    };
+  stable targetOutcomes :
+    {
+      var root : Node__46230540<Nat, TargetOutcome__890183620>;
+      var size : Nat__490723111
+    };
+  stable timerState :
+    {
+      var challengeCheckTimerId : ?TimerId__422952500;
+      var dayEndTimerId : ?TimerId__422952500;
+      var priceTimerId : ?TimerId__422952500;
+      var slCheckTimerId : ?TimerId__422952500
+    };
+  stable totalInvestorShares : {var value : Nat};
+  stable trades :
+    {
+      var root : Node__46230540<Nat, Trade__118004559>;
+      var size : Nat__490723111
+    }
+};
